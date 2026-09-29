@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio de Redes IO</title>
+<meta name="description" content="TPI Modelos de Red - UTN FRVT Investigación Operativa 2026: Prim, Kruskal, Dijkstra y Ford-Fulkerson.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">UTN FRVT · Investigación Operativa 2026 · TPI Modelos de Red</div>
+      <h1>Laboratorio de <span>Redes</span></h1>
+    </div>
+    <p class="help"><b>Doble click</b> en el lienzo agrega un nodo. <b>Click</b> en un nodo y después en otro crea una arista. <b>Doble click</b> en una arista cambia su peso; en un nodo, su nombre. Arrastrá para mover. <kbd>Supr</kbd> borra la selección, <kbd>Enter</kbd> calcula.</p>
+  </header>
+
+  <section class="toolbar" aria-label="Controles">
+    <div class="field">
+      <span class="lbl">Algoritmo</span>
+      <div class="algo-pick" id="algoPick" role="group" aria-label="Algoritmo">
+        <button type="button" data-algo="prim"><b>Prim</b> · árbol mínimo</button>
+        <button type="button" data-algo="kruskal"><b>Kruskal</b> · árbol mínimo</button>
+        <button type="button" data-algo="dijkstra"><b>Dijkstra</b> · ruta más corta</button>
+        <button type="button" data-algo="maxflow"><b>Ford-Fulkerson</b> · flujo máximo</button>
+      </div>
+    </div>
+    <div class="field" id="fStart"><label for="selStart">Nodo inicial</label><select id="selStart"></select></div>
+    <div class="field" id="fSrc"><label for="selSrc" id="lblSrc">Origen</label><select id="selSrc"></select></div>
+    <div class="field" id="fDst"><label for="selDst" id="lblDst">Destino</label><select id="selDst"></select></div>
+    <label class="check" id="fDir"><input type="checkbox" id="chkDir"> Aristas dirigidas</label>
+    <div class="spacer"></div>
+    <button class="btn primary" id="btnCalc" type="button">Calcular</button>
+  </section>
+
+  <div class="main">
+    <section class="card" aria-label="Grafo">
+      <div class="card-h">
+        <h2 id="graphName">Grafo</h2>
+        <div class="board-actions">
+          <label class="field" style="grid-auto-flow:column;align-items:center;gap:6px"><span class="lbl">Cargar</span>
+            <select id="selPreset" style="min-height:30px;padding:4px 8px">
+              <option value="">Elegí un grafo…</option>
+              <option value="A">Guía · Grafo A</option><option value="B">Guía · Grafo B</option><option value="C">Guía · Grafo C</option>
+              <option value="D">Guía · Grafo D</option><option value="E">Guía · Grafo E</option>
+              <option value="FLUJO">Ejemplo · Red de flujo</option>
+            </select></label>
+          <input id="numRand" type="number" min="3" max="20" value="8" aria-label="Cantidad de nodos aleatorios" style="width:62px;min-height:30px;padding:4px 8px">
+          <button class="btn" id="btnRand" type="button">Aleatorio</button>
+          <button class="btn" id="btnDel" type="button" disabled>Eliminar selección</button>
+          <button class="btn ghost" id="btnClear" type="button">Limpiar</button>
+        </div>
+      </div>
+      <div class="board-wrap" id="boardWrap">
+        <svg id="board" viewBox="0 0 1000 620" role="img" aria-label="Editor del grafo">
+          <defs>
+            <marker id="ar-base" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse" markerUnits="userSpaceOnUse" style="overflow:visible"><path class="arrow-base" d="M0,0 L10,5 L0,10 z" transform="scale(1.6) translate(-4,-1.9)"/></marker>
+            <marker id="ar-tree" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse" markerUnits="userSpaceOnUse" style="overflow:visible"><path class="arrow-tree" d="M0,0 L10,5 L0,10 z" transform="scale(1.9) translate(-4,-2.4)"/></marker>
+            <marker id="ar-cur" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse" markerUnits="userSpaceOnUse" style="overflow:visible"><path class="arrow-cur" d="M0,0 L10,5 L0,10 z" transform="scale(1.9) translate(-4,-2.4)"/></marker>
+            <marker id="ar-path" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse" markerUnits="userSpaceOnUse" style="overflow:visible"><path class="arrow-path" d="M0,0 L10,5 L0,10 z" transform="scale(1.9) translate(-4,-2.4)"/></marker>
+            <marker id="ar-rej" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse" markerUnits="userSpaceOnUse" style="overflow:visible"><path class="arrow-rej" d="M0,0 L10,5 L0,10 z" transform="scale(1.9) translate(-4,-2.4)"/></marker>
+            <marker id="ar-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse" markerUnits="userSpaceOnUse" style="overflow:visible"><path class="arrow-ink" d="M0,0 L10,5 L0,10 z" transform="scale(1.6) translate(-4,-1.9)"/></marker>
+          </defs>
+          <g id="gEdges"></g><g id="gNodes"></g><g id="gHint"></g>
+        </svg>
+        <div class="pop" id="pop" hidden>
+          <span class="lbl" id="popLbl">Peso</span>
+          <input id="popInput" type="text" inputmode="decimal" autocomplete="off">
+          <button class="btn primary" id="popOk" type="button">OK</button>
+          <button class="btn ghost" id="popCancel" type="button">×</button>
+        </div>
+      </div>
+      <div class="card-h" style="border-bottom:0;border-top:1px solid var(--line)"><span class="board-status" id="status"></span></div>
+    </section>
+
+    <aside class="card" aria-label="Resultado">
+      <div class="card-h"><h2 id="resTitle">Resultado</h2><span class="board-status" id="resAlgo"></span></div>
+      <div class="result" id="result"></div>
+    </aside>
+  </div>
+
+  <section class="tables">
+    <div class="card">
+      <div class="card-h"><h2 id="tblTitle">Tabla detalle paso a paso</h2><button class="btn" id="btnCopyTbl" type="button">Copiar tabla</button></div>
+      <div class="tbl-scroll" id="tblMain"></div>
+    </div>
+    <div class="card" id="extraCard" hidden>
+      <div class="card-h"><h2 id="extraTitle">Detalle final</h2><button class="btn" id="btnCopyExtra" type="button">Copiar tabla</button></div>
+      <div class="tbl-scroll" id="tblExtra"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>Lista de aristas</h2></div>
+      <div class="edgelist">
+        <div>
+          <p>Una arista por línea: <code>origen destino peso</code>. Los nodos pueden ser números o letras. Útil para cargar un ejercicio rápido o pegarlo en el informe.</p>
+          <label for="txtEdges" class="lbl">Aristas</label>
+          <textarea id="txtEdges" spellcheck="false"></textarea>
+          <div class="row"><button class="btn primary" id="btnApply" type="button">Aplicar lista</button><button class="btn" id="btnCopyEdges" type="button">Copiar</button></div>
+        </div>
+        <div>
+          <p><b>Qué resuelve cada algoritmo</b></p>
+          <p><b>Prim</b>: parte de un nodo y en cada paso agrega la arista más barata que sale de la frontera hacia un nodo nuevo.</p>
+          <p><b>Kruskal</b>: ordena todas las aristas por peso y las acepta de menor a mayor, rechazando las que forman ciclo.</p>
+          <p><b>Dijkstra</b>: etiqueta cada nodo con [distancia, predecesor] y en cada iteración hace permanente la menor etiqueta temporal. Pesos ≥ 0.</p>
+          <p><b>Ford-Fulkerson</b> (variante Edmonds-Karp): busca caminos aumentantes con capacidad residual y envía el cuello de botella hasta que no quedan. Si las aristas no son dirigidas, la capacidad vale en ambos sentidos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer>Grafos A–E: Guía Práctica «Modelos de Red», Actividad 1. La red de flujo es un ejemplo propio para probar Ford-Fulkerson.</footer>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="js/algoritmos.js"></script>
+<script src="js/grafos-guia.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
