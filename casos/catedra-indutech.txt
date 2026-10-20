@@ -1,0 +1,13 @@
+# Cátedra · Red de fibra InduTech S.A. (presentaciones de MST y Dijkstra)
+# Esperado según la cátedra: árbol mínimo = 115 m; ruta A → G = 70 ms (A-B-C-F-G)
+# La arista E–F aparece dibujada sin peso en la presentación de Dijkstra: se omite.
+# Prim (desde A) y Kruskal: costo 115
+# Dijkstra A → G: 70 (A → B → C → F → G)
+A - B 30
+A - D 50
+B - C 15
+B - D 20
+C - F 10
+F - G 15
+D - E 25
+E - G 30

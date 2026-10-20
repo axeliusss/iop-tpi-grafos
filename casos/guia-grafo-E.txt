@@ -1,0 +1,38 @@
+# Guía · Grafo E (Guía Práctica «Modelos de Red», Actividad 1)
+# Resultados de la app:
+# Prim (desde A) y Kruskal: costo 59
+# Dijkstra A → P: 19 (A → C → F → H → I → N → P)
+A - B 2
+A - C 2
+A - D 2
+B - G 4
+B - 4 2
+B - C 2
+4 - G 2
+4 - C 3
+G - L 9
+G - F 5
+G - H 2
+H - F 1
+H - I 2
+C - F 3
+C - E 2
+E - F 1
+C - J 7
+E - J 3
+F - J 5
+F - I 5
+C - D 2
+D - J 9
+J - I 8
+J - O 10
+L - M 8
+L - I 9
+I - N 8
+I - O 7
+M - N 9
+M - Q 15
+N - Q 9
+N - P 3
+O - P 8
+P - Q 5

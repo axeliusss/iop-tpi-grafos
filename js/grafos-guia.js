@@ -18,5 +18,23 @@ const PRESETS = {
     edges: 'A B 2|A C 2|A D 2|B G 4|B 4 2|B C 2|4 G 2|4 C 3|G L 9|G F 5|G H 2|H F 1|H I 2|C F 3|C E 2|E F 1|C J 7|E J 3|F J 5|F I 5|C D 2|D J 9|J I 8|J O 10|L M 8|L I 9|I N 8|I O 7|M N 9|M Q 15|N Q 9|N P 3|O P 8|P Q 5' },
   FLUJO: { name: 'Ejemplo · Red de flujo (dirigida)', directed: true,
     pos: { 1: [0.02, 0.5], 2: [0.3, 0.08], 3: [0.3, 0.92], 4: [0.7, 0.08], 5: [0.7, 0.92], 6: [1, 0.5] },
-    edges: '1 2 10|1 3 10|2 3 2|2 4 4|2 5 8|3 5 9|5 4 6|4 6 10|5 6 10' }
+    edges: '1 2 10|1 3 10|2 3 2|2 4 4|2 5 8|3 5 9|5 4 6|4 6 10|5 6 10' },
+  // Casos de las presentaciones de la cátedra
+  INDUTECH: { name: 'Cátedra · Red de fibra InduTech S.A.', directed: false, algo: 'prim',
+    // La arista E–F aparece dibujada sin peso en la presentación de Dijkstra; se omite (no cambia el MST de 115 ni la ruta A→G de 70)
+    pos: { A: [0.02, 0.5], B: [0.33, 0.08], C: [0.62, 0.08], D: [0.33, 0.92], E: [0.62, 0.92], F: [0.8, 0.5], G: [1, 0.5] },
+    edges: 'A B 30|A D 50|B C 15|B D 20|C F 10|F G 15|D E 25|E G 30' },
+  FLUJO18: { name: 'Cátedra · Red de transmisión (18 Mbps)', directed: true, algo: 'maxflow',
+    pos: { S: [0.02, 0.5], A: [0.5, 0.05], B: [0.5, 0.95], T: [1, 0.5] },
+    edges: 'S A 10|A T 8|S B 10|B T 10|A B 2' }
 };
+
+/* ===== PROYECTOS (CPM / PERT): «ID predecesoras duración» o «ID predecesoras a m b» ===== */
+const PROJECTS = {
+  CPM_SERV: { name: 'Cátedra · Instalación de nuevos servidores (CPM)', algo: 'cpm',
+    text: '# Actividad  Predecesoras  Duración (días)\nA - 5   # Diseño del sistema\nB A 7   # Adquisición hardware\nC A 4   # Instalación software\nD B,C 6 # Pruebas internas\nE D 3   # Implementación' },
+  PERT_SERV: { name: 'Cátedra · Despliegue de servidores (PERT)', algo: 'pert', deadline: 18, prob: 95,
+    text: '# Actividad  Predecesoras  a  m  b\nA - 3 5 7     # Diseño del sistema\nB A 5 7 10    # Adquisición hardware\nC A 2 4 6     # Instalación software\nD B,C 4 6 9   # Pruebas internas\nE D 2 3 4     # Implementación' }
+};
+
+if (typeof module !== 'undefined') module.exports = { PRESETS, PROJECTS };
