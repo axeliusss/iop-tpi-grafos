@@ -1,0 +1,7 @@
+# Pegar en PERT con plazo T = 18. Esperado: Te = 21.33, σp = 1.39, P(T ≤ 18) ≈ 0.0084 (la cátedra redondea y da 0.0082)
+# Actividad  Predecesoras  a  m  b
+A - 3 5 7     # Diseño del sistema
+B A 5 7 10    # Adquisición hardware
+C A 2 4 6     # Instalación software
+D B,C 4 6 9   # Pruebas internas
+E D 2 3 4     # Implementación

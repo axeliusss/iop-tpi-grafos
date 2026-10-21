@@ -56,8 +56,8 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); min-width: 0; }
 .card-h { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line); }
 .card-h h2 { font: 600 15px var(--f-display); margin: 0; }
-.board-wrap { position: relative; }
-#board { display: block; width: 100%; height: auto; aspect-ratio: 1000 / 620; max-width: 100%; touch-action: none; user-select: none; -webkit-user-select: none; border-radius: 0 0 10px 10px;
+.board-wrap { position: relative; overflow: auto; max-height: 80vh; }
+#board { display: block; width: 100%; height: auto; aspect-ratio: 1000 / 620; touch-action: none; user-select: none; -webkit-user-select: none; border-radius: 0 0 10px 10px;
   background-color: var(--paper);
   background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: 24px 24px; }
@@ -99,6 +99,18 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 .node.st-path text { fill: var(--on-accent); }
 .node text.role { font: 600 11px var(--f-mono); fill: var(--muted); text-anchor: middle; }
 .empty-hint { font: 500 18px var(--f-body); fill: var(--muted); text-anchor: middle; }
+/* Red de proyecto (AON): caja IC|TC / ID|t / IL|TL como en la cátedra */
+.pbox rect { fill: var(--node); stroke: var(--ink); stroke-width: 1.8; }
+.pbox line { stroke: var(--line); stroke-width: 1.2; }
+.pbox text { text-anchor: middle; dominant-baseline: central; fill: var(--ink); pointer-events: none; }
+.pbox text.pid { font: 600 15px var(--f-display); }
+.pbox text.pv { font: 500 13px var(--f-mono); }
+.pbox.st-in rect { fill: var(--accent-soft); stroke: var(--accent); }
+.pbox.st-current rect { fill: var(--cand-soft); stroke: var(--cand); stroke-width: 3; }
+.pbox.st-path rect { fill: var(--path-soft); stroke: var(--path); stroke-width: 3; }
+.pnode circle { fill: var(--paper); stroke: var(--muted); stroke-width: 2; }
+.pnode { cursor: default; }
+.edge.virt .e-line { stroke-dasharray: 4 4; opacity: .6; }
 
 .pop { position: absolute; z-index: 5; display: flex; gap: 6px; align-items: center; background: var(--panel); border: 1px solid var(--accent); border-radius: 9px; padding: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.18); transform: translate(-50%, -50%); }
 .pop input { width: 86px; min-height: 32px; font-family: var(--f-mono); }
@@ -142,3 +154,10 @@ textarea { width: 100%; min-height: 180px; font: 13px/1.5 var(--f-mono); resize:
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 8px; font-size: 13px; z-index: 20; }
 footer { color: var(--muted); font-size: 12px; }
 @media (prefers-reduced-motion: no-preference) { .edge .e-line, .node circle { transition: stroke .2s, fill .2s, stroke-width .2s; } }
+
+.zoom { display: flex; gap: 4px; align-items: center; }
+.zoom .btn { padding: 2px 9px; min-height: 28px; font-size: 13px; }
+.pop select { min-height: 32px; padding: 4px 6px; font-size: 13px; }
+.msg { margin-top: 8px; font-size: 13px; padding: 6px 10px; border-radius: 0 6px 6px 0; background: var(--paper); }
+.msg.info { border-left: 3px solid var(--path); }
+.msg ul { margin: 4px 0 0; padding-left: 18px; }

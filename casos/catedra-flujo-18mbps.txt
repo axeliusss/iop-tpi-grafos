@@ -1,0 +1,8 @@
+# Cátedra · Red de transmisión (18 Mbps)
+# Esperado según la cátedra: 18 Mbps. Fuente S, sumidero T.
+# Flujo máximo según la app: 18 · Corte mínimo: A–T, B–T
+S > A 10
+A > T 8
+S > B 10
+B > T 10
+A > B 2

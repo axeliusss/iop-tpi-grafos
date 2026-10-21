@@ -1,0 +1,12 @@
+# Guía · Grafo D (Guía Práctica «Modelos de Red», Actividad 1)
+# Resultados de la app:
+# Prim (desde 1) y Kruskal: costo 42
+# Dijkstra 1 → 2: 7 (1 → 2)
+1 - 6 14
+6 - 5 9
+5 - 4 6
+1 - 3 9
+3 - 4 11
+1 - 2 7
+3 - 2 10
+2 - 4 15

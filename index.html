@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Laboratorio de Redes IO</title>
-<meta name="description" content="TPI Modelos de Red - UTN FRVT Investigación Operativa 2026: Prim, Kruskal, Dijkstra y Ford-Fulkerson.">
+<meta name="description" content="TPI Modelos de Red - UTN FRVT Investigación Operativa 2026: Prim, Kruskal, Dijkstra, Ford-Fulkerson, CPM y PERT.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/styles.css?v=3">
 </head>
 <body>
 <div class="wrap">
@@ -17,7 +17,7 @@
       <div class="eyebrow">UTN FRVT · Investigación Operativa 2026 · TPI Modelos de Red</div>
       <h1>Laboratorio de <span>Redes</span></h1>
     </div>
-    <p class="help"><b>Doble click</b> en el lienzo agrega un nodo. <b>Click</b> en un nodo y después en otro crea una arista. <b>Doble click</b> en una arista cambia su peso; en un nodo, su nombre. Arrastrá para mover. <kbd>Supr</kbd> borra la selección, <kbd>Enter</kbd> calcula.</p>
+    <p class="help"><b>Doble click</b> en el lienzo agrega un nodo. <b>Click</b> en un nodo y después en otro crea una arista. <b>Doble click</b> en una arista cambia su peso y sentido; en un nodo, su nombre. Arrastrá para mover. <kbd>Supr</kbd> borra la selección, <kbd>Enter</kbd> calcula.</p>
   </header>
 
   <section class="toolbar" aria-label="Controles">
@@ -28,12 +28,15 @@
         <button type="button" data-algo="kruskal"><b>Kruskal</b> · árbol mínimo</button>
         <button type="button" data-algo="dijkstra"><b>Dijkstra</b> · ruta más corta</button>
         <button type="button" data-algo="maxflow"><b>Ford-Fulkerson</b> · flujo máximo</button>
+        <button type="button" data-algo="cpm"><b>CPM</b> · ruta crítica</button>
+        <button type="button" data-algo="pert"><b>PERT</b> · probabilístico</button>
       </div>
     </div>
     <div class="field" id="fStart"><label for="selStart">Nodo inicial</label><select id="selStart"></select></div>
     <div class="field" id="fSrc"><label for="selSrc" id="lblSrc">Origen</label><select id="selSrc"></select></div>
     <div class="field" id="fDst"><label for="selDst" id="lblDst">Destino</label><select id="selDst"></select></div>
-    <label class="check" id="fDir"><input type="checkbox" id="chkDir"> Aristas dirigidas</label>
+    <div class="field" id="fDeadline"><label for="numDeadline">Plazo T</label><input id="numDeadline" type="number" step="any" min="0" style="width:96px" placeholder="ej. 18"></div>
+    <div class="field" id="fProb"><label for="numProb">Confianza %</label><input id="numProb" type="number" step="any" min="1" max="99" style="width:86px" placeholder="ej. 95"></div>
     <div class="spacer"></div>
     <button class="btn primary" id="btnCalc" type="button">Calcular</button>
   </section>
@@ -49,9 +52,16 @@
               <option value="A">Guía · Grafo A</option><option value="B">Guía · Grafo B</option><option value="C">Guía · Grafo C</option>
               <option value="D">Guía · Grafo D</option><option value="E">Guía · Grafo E</option>
               <option value="FLUJO">Ejemplo · Red de flujo</option>
+              <optgroup label="Casos de la cátedra">
+                <option value="INDUTECH">InduTech · árbol mínimo / Dijkstra</option>
+                <option value="FLUJO18">Red de transmisión 18 Mbps (flujo)</option>
+                <option value="CPM_SERV">Servidores · CPM</option>
+                <option value="PERT_SERV">Servidores · PERT</option>
+              </optgroup>
             </select></label>
-          <input id="numRand" type="number" min="3" max="20" value="8" aria-label="Cantidad de nodos aleatorios" style="width:62px;min-height:30px;padding:4px 8px">
+          <input id="numRand" type="number" min="3" max="200" value="8" aria-label="Cantidad de nodos aleatorios" style="width:62px;min-height:30px;padding:4px 8px">
           <button class="btn" id="btnRand" type="button">Aleatorio</button>
+          <button class="btn" id="btnLayout" type="button" title="Acomoda los nodos automáticamente">Reordenar</button>
           <button class="btn" id="btnDel" type="button" disabled>Eliminar selección</button>
           <button class="btn ghost" id="btnClear" type="button">Limpiar</button>
         </div>
@@ -70,12 +80,14 @@
         </svg>
         <div class="pop" id="pop" hidden>
           <span class="lbl" id="popLbl">Peso</span>
+          <select id="popDir" aria-label="Sentido"><option value="-">A - B · sin sentido</option><option value=">">A &gt; B · de A a B</option><option value="&lt;">A &lt; B · de B a A</option></select>
           <input id="popInput" type="text" inputmode="decimal" autocomplete="off">
           <button class="btn primary" id="popOk" type="button">OK</button>
           <button class="btn ghost" id="popCancel" type="button">×</button>
         </div>
       </div>
-      <div class="card-h" style="border-bottom:0;border-top:1px solid var(--line)"><span class="board-status" id="status"></span></div>
+      <div class="card-h" style="border-bottom:0;border-top:1px solid var(--line)"><span class="board-status" id="status"></span>
+        <div class="zoom" role="group" aria-label="Zoom del lienzo"><button class="btn" id="btnZoomOut" type="button" aria-label="Alejar">−</button><span class="board-status" id="zoomLbl">100%</span><button class="btn" id="btnZoomIn" type="button" aria-label="Acercar">+</button><button class="btn" id="btnZoomFit" type="button">Ajustar</button></div></div>
     </section>
 
     <aside class="card" aria-label="Resultado">
@@ -94,12 +106,19 @@
       <div class="tbl-scroll" id="tblExtra"></div>
     </div>
     <div class="card">
-      <div class="card-h"><h2>Lista de aristas</h2></div>
+      <div class="card-h"><h2 id="listTitle">Lista de aristas</h2></div>
       <div class="edgelist">
-        <div>
-          <p>Una arista por línea: <code>origen destino peso</code>. Los nodos pueden ser números o letras. Útil para cargar un ejercicio rápido o pegarlo en el informe.</p>
+        <div id="projBlock" hidden>
+          <p>Una actividad por línea: <code>ID predecesoras duración</code> para CPM, o <code>ID predecesoras a m b</code> para PERT. Predecesoras separadas por coma; <code>-</code> si no tiene. Ejemplo: <code>D B,C 6</code>.</p>
+          <label for="txtProj" class="lbl">Actividades</label>
+          <textarea id="txtProj" spellcheck="false"></textarea>
+          <div class="row"><button class="btn primary" id="btnApplyProj" type="button">Aplicar actividades</button><button class="btn" id="btnCopyProj" type="button">Copiar</button></div>
+        </div>
+        <div id="edgeBlock">
+          <p>Una arista por línea: <code>A - B 5</code> sin sentido, <code>A &gt; B 5</code> de A hacia B, <code>A &lt; B 5</code> de B hacia A. El número es el peso (o la capacidad, en flujo máximo). Los nodos pueden ser números o letras, sin espacios. Una línea con un solo nombre agrega un nodo suelto; lo que sigue a <code>#</code> es comentario.</p>
           <label for="txtEdges" class="lbl">Aristas</label>
           <textarea id="txtEdges" spellcheck="false"></textarea>
+          <div id="edgeMsg" class="msg" hidden></div>
           <div class="row"><button class="btn primary" id="btnApply" type="button">Aplicar lista</button><button class="btn" id="btnCopyEdges" type="button">Copiar</button></div>
         </div>
         <div>
@@ -107,17 +126,19 @@
           <p><b>Prim</b>: parte de un nodo y en cada paso agrega la arista más barata que sale de la frontera hacia un nodo nuevo.</p>
           <p><b>Kruskal</b>: ordena todas las aristas por peso y las acepta de menor a mayor, rechazando las que forman ciclo.</p>
           <p><b>Dijkstra</b>: etiqueta cada nodo con [distancia, predecesor] y en cada iteración hace permanente la menor etiqueta temporal. Pesos ≥ 0.</p>
-          <p><b>Ford-Fulkerson</b> (variante Edmonds-Karp): busca caminos aumentantes con capacidad residual y envía el cuello de botella hasta que no quedan. Si las aristas no son dirigidas, la capacidad vale en ambos sentidos.</p>
+          <p><b>Ford-Fulkerson</b> (variante Edmonds-Karp): busca caminos aumentantes con capacidad residual y envía el cuello de botella hasta que no quedan. Una arista <code>A - B</code> es un canal que se puede usar en cualquiera de los dos sentidos, con la capacidad indicada.</p>
+          <p><b>CPM</b>: red AON (nodo = actividad). Pasada hacia adelante (IC, TC = IC + t, IC = máx TC de predecesoras) y hacia atrás (TL = mín IL de sucesoras, IL = TL − t). Holgura = TL − TC; holgura 0 = ruta crítica.</p>
+          <p><b>PERT</b>: con a, m, b calcula te = (a + 4m + b)/6 y σ² = ((b − a)/6)², hace las dos pasadas con te, suma las varianzas de la ruta crítica y usa Z = (T − Te)/σp para la probabilidad de cumplir el plazo.</p>
         </div>
       </div>
     </div>
   </section>
-  <footer>Grafos A–E: Guía Práctica «Modelos de Red», Actividad 1. La red de flujo es un ejemplo propio para probar Ford-Fulkerson.</footer>
+  <footer>Grafos A–E: Guía Práctica «Modelos de Red», Actividad 1. Casos de la cátedra: InduTech S.A. (MST y Dijkstra), red de transmisión de 18 Mbps (flujo máximo) e instalación de servidores (CPM y PERT). La red de flujo «Ejemplo» es propia.</footer>
 </div>
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/algoritmos.js"></script>
-<script src="js/grafos-guia.js"></script>
-<script src="js/app.js"></script>
+<script src="js/algoritmos.js?v=3"></script>
+<script src="js/grafos-guia.js?v=3"></script>
+<script src="js/app.js?v=3"></script>
 </body>
 </html>
